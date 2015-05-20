@@ -5,7 +5,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 
 public class DetailActivity extends ActionBarActivity {
@@ -20,23 +19,13 @@ public class DetailActivity extends ActionBarActivity {
                     .add(R.id.fragment, new DetailActivityFragment())
                     .commit();
         }
-
-        /*Intent intent = getIntent();
-
-        String weatherDetail = intent.getStringExtra(Intent.EXTRA_TEXT);
-
-        TextView textView = new TextView(this);
-        textView.setTextSize(40);
-        textView.setText(weatherDetail);
-
-        setContentView(textView);*/
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        getMenuInflater().inflate(R.menu.detail, menu);
         return true;
     }
 
