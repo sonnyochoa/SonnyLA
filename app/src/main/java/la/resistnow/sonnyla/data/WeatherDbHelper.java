@@ -55,16 +55,23 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
                 WeatherEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";
 
         sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
+
+        final String SQL_CREATE_LOCATION_TABLE = "CREATE TABLE " + LocationEntry.TABLE_NAME + " (" +
+                LocationEntry._ID + " INTEGER PRIMARY KEY," +
+                LocationEntry.COLUMN_LOCATION_SETTING + " TEXT UNIQUE NOT NULL, " +
+                LocationEntry.COLUMN_CITY_NAME + " TEXT NOT NULL, " +
+                LocationEntry.COLUMN_COORD_LAT + " REAL NOT NULL, " +
+                LocationEntry.COLUMN_COORD_LONG + " REAL NOT NULL" +
+                " );";
+
+        sqLiteDatabase.execSQL(SQL_CREATE_LOCATION_TABLE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // This database is only a cache for online data, so its upgrade policy is
         // to simply to discard the data and start over
-        // Note that this only fires if you change the version number for your database.
-        // It does NOT depend on the version number for your application.
-        // If you want to update the schema without wiping data, commenting out the next 2 lines
-        // should be your top priority before modifying this method.
+        // This only fires if you change the version number for your database.
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + LocationEntry.TABLE_NAME);
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + WeatherEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
