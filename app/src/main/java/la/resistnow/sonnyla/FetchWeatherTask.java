@@ -1,7 +1,9 @@
 package la.resistnow.sonnyla;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -9,6 +11,7 @@ import android.text.format.Time;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import la.resistnow.sonnyla.data.WeatherContract;
 import la.resistnow.sonnyla.data.WeatherContract.WeatherEntry;
 
 import org.json.JSONArray;
@@ -81,8 +84,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     }
 
     /**
-     * Helper method to handle insertion of a new location in the weather database.
-     *
      * @param locationSetting The location string used to request updates from the server.
      * @param cityName A human-readable city name, e.g "Mountain View"
      * @param lat the latitude of the city
@@ -90,10 +91,42 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
      * @return the row ID of the added location.
      */
     long addLocation(String locationSetting, String cityName, double lat, double lon) {
-        // Students: First, check if the location with this city name exists in the db
-        // If it exists, return the current ID
-        // Otherwise, insert it using the content resolver and the base URI
-        return -1;
+        long locationId;
+
+        // Check if location w/ city name exists in db
+        Cursor locationCursor = mContext.getContentResolver().query(
+                WeatherContract.LocationEntry.CONTENT_URI,
+                new String[]{WeatherContract.LocationEntry._ID},
+                WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING + " = ?",
+                new String[]{locationSetting},
+                null);
+
+        if (locationCursor.moveToFirst()) {
+            int locationIdIndex = locationCursor.getColumnIndex(WeatherContract.LocationEntry._ID);
+            locationId = locationCursor.getLong(locationIdIndex);
+        } else {
+            // Create a ContentValues object to hold the data to insert rows of data.
+            ContentValues locationValues = new ContentValues();
+
+            // Add the data, along w/ data type.
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME, cityName);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT, lat);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG, lon);
+
+            // Insert location data into the database.
+            Uri insertedUri = mContext.getContentResolver().insert(
+                    WeatherContract.LocationEntry.CONTENT_URI,
+                    locationValues
+            );
+
+            // Extract locationId from Uri.
+            locationId = ContentUris.parseId(insertedUri);
+        }
+
+        locationCursor.close();
+
+        return locationId;
     }
 
     /*
