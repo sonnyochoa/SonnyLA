@@ -34,6 +34,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="la.resistnow.sonnyla.MainActivity" />
         </activity>
+
+        <provider
+            android:authorities="la.resistnow.sonnyla"
+            android:name="la.resistnow.sonnyla.data.WeatherProvider">
+        </provider>
     </application>
 
 </manifest>
